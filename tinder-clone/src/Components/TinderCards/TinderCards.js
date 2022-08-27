@@ -1,36 +1,29 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./tinderCards.css";
 import TinderCard from "react-tinder-card";
+import axios from "../../axios";
 
 function TinderCards() {
-    const [people, setPeople] = useState([
-        {
-            name: "Elon Musk",
-            url: "https://images.unsplash.com/photo-1533636721434-0e2d61030955?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTN" +
-                "8fHRpbmRlciUyMHByb2ZpbGUlMjBlbG9uJTIwbXVza3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
-        },
-        {
-            name: "Jeff Bezos",
-            url: "https://images.unsplash.com/photo-1533636721434-0e2d61030955?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTN" +
-                "8fHRpbmRlciUyMHByb2ZpbGUlMjBlbG9uJTIwbXVza3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
-        },
-        {
-            name: "Gur",
-            url: "https://images.unsplash.com/photo-1533636721434-0e2d61030955?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTN" +
-                "8fHRpbmRlciUyMHByb2ZpbGUlMjBlbG9uJTIwbXVza3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
-        },
-
-
-    ])
+    const [people, setPeople] = useState([])
     const swiped = (direction, nameToDelete) => {
         console.log("removing:", nameToDelete)
-
     }
     const outOfFrame = (name) => {
         console.log(name + "left the screen")
     }
+    const API_BASE = "http://localhost:3001";
+    useEffect(() => {
+        cards()
+    }, [])
+    const cards = () => {
+        fetch(API_BASE + "/tinder/cards")
+            .then(res => res.json())
+            .then(data => setPeople(data))
+            .catch(err => console.log("error", err))
+    }
+    console.log(people)
     return <div className={"tinder-cards"}>
-        <div className={"tinder-cards-container"}>
+        <div className={"tinder-cards-container card-content"}>
             {
                 people.map((person) => {
                     return <TinderCard className={"swipe"}
@@ -38,16 +31,14 @@ function TinderCards() {
                                        preventSwipe={["up", "down"]}
                                        onSwipe={(dir) => swiped(dir, person.name)}
                                        onCardLeftScreen={() => outOfFrame(person.name)}>
-                        <div className={"card"}
-                             style={{backgroundImage: ""}}>
+                        <div className={"card c"}
+                             style={{backgroundImage: `url(${person.imageURL})`}}>
                             <h3>{person.name}</h3>
                         </div>
                     </TinderCard>
                 })
             }
         </div>
-
-
     </div>
 
 }
